@@ -1,0 +1,19 @@
+{
+  "builds": [
+    {
+      "src": "vercel_handler.py",
+      "use": "@vercel/python",
+      "config": {
+        "runtime": "python3.11",
+        "installCommand": "pip install -r requirements.txt",
+        "buildCommand": "python manage.py collectstatic --noinput"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "vercel_handler.py"
+    }
+  ]
+}
