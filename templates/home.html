@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Welcome | ERMS{% endblock %}
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <h1>Employee Record Management System</h1>
+        <p>Manage employee records securely with role-based dashboards and flexible themes.</p>
+        <div class="cta">
+            <a class="btn" href="{% url 'admin_login' %}">Admin Login</a>
+            <a class="btn secondary" href="{% url 'employee_login' %}">Employee Login</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

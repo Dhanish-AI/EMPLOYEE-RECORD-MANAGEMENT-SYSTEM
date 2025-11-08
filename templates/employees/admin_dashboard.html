@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Admin Dashboard | ERMS{% endblock %}
+{% block content %}
+<section class="dashboard">
+    <div class="card overview-card">
+        <div class="card-header">
+            <h2>Workforce Overview</h2>
+        </div>
+        <div class="stats-grid">
+            <div class="stat">
+                <span class="label">Total Employees</span>
+                <span class="value">{{ employees_count }}</span>
+            </div>
+            <div class="stat">
+                <span class="label">Full-Time</span>
+                <span class="value">{{ full_time_count }}</span>
+            </div>
+            <div class="stat">
+                <span class="label">Departments</span>
+                <span class="value">{{ department_count }}</span>
+            </div>
+            <div class="stat">
+                <span class="label">Average Salary</span>
+                <span class="value">${{ average_salary|floatformat:0 }}</span>
+            </div>
+            <div class="stat">
+                <span class="label">Average Tenure</span>
+                <span class="value">{{ average_tenure|floatformat:1 }} yrs</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card employee-card">
+        <div class="card-header employee-card-header">
+            <div class="header-info">
+                <h2>Employees</h2>
+                <p class="header-note">
+                    {% if show_all_employees %}
+                    Viewing all {{ employees_count }} employees.
+                    {% else %}
+                    Showing first {{ preview_limit }} employees.
+                    {% endif %}
+                </p>
+            </div>
+            <div class="header-actions">
+                <a class="btn" href="{% url 'employee_create' %}">Add Employee</a>
+                {% if show_all_employees %}
+                <a class="btn secondary" href="{% url 'admin_dashboard' %}">Show less</a>
+                {% else %}
+                <a class="btn secondary" href="{% url 'admin_dashboard' %}?view=all{% if query %}&amp;q={{ query|urlencode }}{% endif %}">View all</a>
+                {% endif %}
+                <div class="search-control" data-employee-search data-search-endpoint="{% url 'admin_employee_search' %}">
+                    <input type="search" name="q" placeholder="Search employees" aria-label="Search employees" value="{{ query }}" data-employee-search-input>
+                    <span class="search-status" aria-live="polite"></span>
+                </div>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table" data-employee-table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Role</th>
+                        <th>Department</th>
+                        <th>Status</th>
+                        <th>Hire Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="employeeTableBody">
+                    {% for employee in displayed_employees %}
+                    <tr>
+                        <td>{{ employee.employee_id }}</td>
+                        <td>{{ employee.full_name }}</td>
+                        <td>{{ employee.role }}</td>
+                        <td>{{ employee.department }}</td>
+                        <td><span class="badge">{{ employee.status }}</span></td>
+                        <td>{{ employee.hire_date|date:'M d, Y' }}</td>
+                        <td class="row-actions">
+                            <a href="{% url 'employee_detail' employee.pk %}">View</a>
+                            <a href="{% url 'employee_update' employee.pk %}">Edit</a>
+                            <a href="{% url 'employee_delete' employee.pk %}" class="danger">Delete</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr class="no-results">
+                        <td colspan="7">No employees found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card analytics-card">
+        <div class="card-header">
+            <h2>Workforce Analytics</h2>
+        </div>
+        <div class="analytics-grid">
+            <div class="chart-card">
+                <h3>Headcount by Department</h3>
+                <canvas id="departmentChart" aria-label="Employees by department" role="img"></canvas>
+            </div>
+            <div class="chart-card">
+                <h3>Headcount by Status</h3>
+                <canvas id="statusChart" aria-label="Employees by status" role="img"></canvas>
+            </div>
+            <div class="chart-card">
+                <h3>Average Salary by Department</h3>
+                <canvas id="salaryChart" aria-label="Average salary by department" role="img"></canvas>
+            </div>
+            <div class="chart-card">
+                <h3>Average Tenure by Department</h3>
+                <canvas id="tenureChart" aria-label="Average tenure by department" role="img"></canvas>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" integrity="sha384-NrKB+u6Ts6AtkIhwPixiKTzgSKNblyhlk0Sohlgar9UHUBzai/sgnNNWWd291xqt" crossorigin="anonymous"></script>
+{{ department_chart|json_script:"department-chart-data" }}
+{{ status_chart|json_script:"status-chart-data" }}
+{{ department_salary_chart|json_script:"department-salary-chart-data" }}
+{{ department_tenure_chart|json_script:"department-tenure-chart-data" }}
+<script src="{% static 'employees/js/admin_dashboard.js' %}"></script>
+{% endblock %}

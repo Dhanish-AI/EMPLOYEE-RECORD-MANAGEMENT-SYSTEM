@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}Login | ERMS{% endblock %}
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <h1>{{ role|capfirst }} Portal</h1>
+        <p class="subtext">
+            {% if role == 'employee' %}
+            Enter your username, work email, or employee ID with your password to access the employee dashboard. After login,
+            please use the in-app navigation rather than the browser back button.
+            {% else %}
+            Enter your administrator credentials to manage ERMS data.
+            {% endif %}
+        </p>
+        {% if form.errors %}
+        <div class="alert alert-error">
+            {% if role == 'employee' %}
+            We could not verify those credentials. Check the identifier and password, then try again. If you just changed your password,
+            reload this page before submitting.
+            {% else %}
+            We could not verify those credentials. Confirm your username and password, then try again.
+            {% endif %}
+        </div>
+        {% endif %}
+        <form method="post" novalidate data-login-form>
+            {% csrf_token %}
+            <label for="id_username">
+                {% if role == 'employee' %}Username / Email / Employee ID{% else %}Username{% endif %}
+            </label>
+            <div class="input-group">
+                {{ form.username }}
+                {% if role == 'employee' %}
+                <small class="hint">Example: <code>priya.verma.emp0003</code>, <code>priya.verma.emp0003@examplecorp.com</code>, or <code>EMP0003</code></small>
+                {% endif %}
+            </div>
+            <label for="id_password">Password</label>
+            <div class="input-group">
+                {{ form.password }}
+                {% if role == 'employee' %}
+                <small class="hint">If this is your first login, enter the default password provided by HR.</small>
+                {% endif %}
+            </div>
+            <button type="submit">
+                <span class="btn-label">Login</span>
+                <span class="spinner" aria-hidden="true"></span>
+            </button>
+        </form>
+        <div class="switch-links">
+            {% if role == 'admin' %}
+            <p>Looking for the employee portal? <a href="{% url 'employee_login' %}">Employee login</a></p>
+            {% else %}
+            <p>Need admin access? <a href="{% url 'admin_login' %}">Go to admin login</a></p>
+            {% endif %}
+        </div>
+        {% if role == 'employee' %}
+        <p class="navigation-hint">Tip: After logging out, return to this page using the "Employee login" link instead of the browser back button.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

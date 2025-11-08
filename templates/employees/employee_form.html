@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }} | ERMS{% endblock %}
+{% block content %}
+<section class="dashboard">
+    <div class="card form-card">
+        <div class="card-header">
+            <h2>{{ title }}</h2>
+            <a class="btn secondary" href="{% url 'admin_dashboard' %}">Back to dashboard</a>
+        </div>
+        <form method="post" novalidate class="form-grid">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+            <div class="alert alert-error">
+                {% for error in form.non_field_errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% for field in form %}
+            <div class="form-field{% if field.name in form.select_fields %} select-wrapper{% endif %}{% if field.errors %} has-error{% endif %}">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                <p class="help-text">{{ field.help_text }}</p>
+                {% endif %}
+                {% if field.errors %}
+                <div class="field-errors">
+                    {% for error in field.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+            <div class="form-actions">
+                <button type="submit" class="btn">{{ submit_label }}</button>
+                {% if employee %}
+                <a class="btn secondary" href="{% url 'employee_detail' employee.pk %}">Cancel</a>
+                {% else %}
+                <a class="btn secondary" href="{% url 'admin_dashboard' %}">Cancel</a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}Employee Dashboard | ERMS{% endblock %}
+{% block content %}
+<section class="dashboard">
+    <div class="card">
+        <h2>Welcome back, {{ employee.full_name }}!</h2>
+        <p>Your employee ID is <strong>{{ employee.employee_id }}</strong>. Below are your current employment details.</p>
+    </div>
+
+    <div class="card">
+        <h3>Profile</h3>
+        <div class="profile-grid">
+            <div>
+                <span class="label">Email</span>
+                <span>{{ employee.email }}</span>
+            </div>
+            <div>
+                <span class="label">Department</span>
+                <span>{{ employee.department }}</span>
+            </div>
+            <div>
+                <span class="label">Role</span>
+                <span>{{ employee.role }}</span>
+            </div>
+            <div>
+                <span class="label">Hire Date</span>
+                <span>{{ employee.hire_date|date:'M d, Y' }}</span>
+            </div>
+            <div>
+                <span class="label">Manager</span>
+                <span>{{ employee.manager_id|default:'N/A' }}</span>
+            </div>
+            <div>
+                <span class="label">Status</span>
+                <span class="badge">{{ employee.status }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Compensation</h3>
+        <div class="profile-grid">
+            <div>
+                <span class="label">Employment Type</span>
+                <span>{{ employee.full_time|yesno:'Full-Time,Part-Time' }}</span>
+            </div>
+            <div>
+                <span class="label">Salary</span>
+                <span>${{ employee.salary }}</span>
+            </div>
+            <div>
+                <span class="label">Performance Score</span>
+                <span>{{ employee.performance_score }}</span>
+            </div>
+            <div>
+                <span class="label">Bank Account</span>
+                <span>{{ employee.bank_account_masked }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Emergency Contact</h3>
+        <div class="profile-grid">
+            <div>
+                <span class="label">Name</span>
+                <span>{{ employee.emergency_contact_name }}</span>
+            </div>
+            <div>
+                <span class="label">Phone</span>
+                <span>{{ employee.emergency_contact_phone }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card account-security">
+        <h3>Account Security</h3>
+        <p>Keep your account secure by reviewing your password periodically. You can reveal fields while typing using the eye icon.</p>
+        <a class="btn" href="{% url 'employee_change_password' %}">Manage Password</a>
+    </div>
+</section>
+{% endblock %}
